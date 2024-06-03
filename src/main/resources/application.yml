@@ -1,0 +1,16 @@
+logging:
+  level:
+    io.zenwave360.example: DEBUG
+
+
+management.endpoints.web.exposure.include: "*"
+
+spring:
+  security:
+    user:
+      name: user
+      password: password
+      roles: USER
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}

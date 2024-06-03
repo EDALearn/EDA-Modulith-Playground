@@ -1,0 +1,133 @@
+
+/**
+ * ZenWave Online Food Delivery - Customers Module.
+ */
+config {
+    title "ZenWave Online Food Delivery - Customers Module"
+    basePackage "io.zenwave360.example.customers"
+    persistence mongodb
+    simpleDomainPackaging true
+
+    // these should match the values of openapi-generator-maven-plugin
+    // used by the OpenAPIControllersPlugin and SpringWebTestClientPlugin
+    openApiApiPackage "{{basePackage}}"
+    openApiModelPackage "{{basePackage}}.dtos"
+    openApiModelNameSuffix DTO
+
+    plugins {
+
+        ZDLToOpenAPIPlugin {
+            idType string
+            targetFile "src/main/resources/apis/openapi-customers.yml"
+        }
+
+        BackendApplicationDefaultPlugin {
+            useLombok true
+            includeEmitEventsImplementation true
+             --force // overwite all files
+        }
+
+        OpenAPIControllersPlugin {
+            openapiFile "src/main/resources/apis/openapi-customers.yml"
+            zdlFile "models/customers.zdl"
+        }
+
+        SpringWebTestClientPlugin {
+            openapiFile "src/main/resources/apis/openapi-customers.yml"
+        }
+
+        SpringWebTestClientPlugin {
+            openapiFile "src/main/resources/apis/openapi-customers.yml"
+            groupBy businessFlow
+            businessFlowTestName CreateUpdateDeleteCustomerIntegrationTest
+            operationIds createCustomer,updateCustomer,deleteCustomer,getCustomer
+        }
+    }
+}
+
+
+// == Entities =============================
+/**
+* Customer javadoc comment
+*/
+@aggregate
+entity Customer {
+  firstName String required minlength(2) maxlength(250) /** first name javadoc comment */
+  lastName String required minlength(2) maxlength(250) /** last name javadoc comment */
+  email String required unique /** email javadoc comment */
+  phone String required
+  /**
+   * address is a nested entity
+   */
+  addresses Address[] {
+    identifier String required /** Description identifier for this Address */
+
+    street String required
+    city String
+    state String
+    zip String
+    type AddressType required /** address type is an enum */
+  }
+}
+
+enum AddressType {  HOME(1) /** home description */,  WORK(1) /** work description */ }
+
+// == Services =============================
+
+@inline
+input AddressInput {
+    identifier String required /** Description identifier for this Address */
+    address Address
+}
+
+/**
+ Service javadoc comment
+ */
+@rest("/customers")
+service CustomerService for (Customer) {
+  /**
+   * Create customer javadoc comment
+   */
+  @post
+  createCustomer(Customer) Customer withEvents CustomerEvent
+
+  @put("/{customerId}")
+  updateCustomer(id, Customer) Customer? withEvents CustomerEvent
+
+  /** Updates a the customer address identified by address.identifier */
+  @put("/{customerId}/address/{identifier}")
+  updateCustomerAddress(id, AddressInput) Customer? withEvents CustomerEvent CustomerAddressUpdated
+
+  @delete("/{customerId}")
+  deleteCustomer(id) withEvents CustomerEvent
+
+  @get("/{customerId}")
+  getCustomer(id) Customer?
+
+  @get
+  @paginated
+  listCustomers() Customer[]
+}
+
+// == Events =============================
+
+@skip // skip generating this domain enum, it will genereate by asyncapi code generator.
+enum EventType {  CREATED(1) /** created description */,  UPDATED(1) /** updated description */,  DELETED(1) /** deleted description */ }
+
+event CustomerEvent {
+  customerId String
+  eventType EventType
+  customer CustomerEventDetails {
+    firstName String
+    lastName String
+    email String
+    phone String
+  }
+}
+
+event CustomerAddressUpdated {
+  customerId String
+  addressDescription String
+  originalAddress Address
+  newAddress Address
+}
