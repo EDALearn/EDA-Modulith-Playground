@@ -6,18 +6,17 @@ config {
     basePackage "io.zenwave360.example.orders"
     persistence mongodb
 
-    // these are code generation plugins for ZenWave IntelliJ Plugin, for models you can skip to 'entities' section
+    // these should match the values of openapi-generator-maven-plugin
+    // used by the OpenAPIControllersPlugin and SpringWebTestClientPlugin
+    openApiApiPackage "{{basePackage}}.adapters.web"
+    openApiModelPackage "{{basePackage}}.adapters.web.dtos"
+    openApiModelNameSuffix DTO
+
     plugins {
 
         ZDLToOpenAPIPlugin {
             idType string
-            targetFile "{{targetFolder}}/src/main/resources/apis/openapi.yml"
-        }
-
-        ZDLToAsyncAPIPlugin {
-            asyncapiVersion v3
-            idType string
-            targetFile "{{targetFolder}}/src/main/resources/apis/asyncapi.yml"
+            targetFile "src/main/resources/apis/openapi-orders.yml"
         }
 
         BackendApplicationDefaultPlugin {
@@ -27,49 +26,32 @@ config {
         }
 
         OpenAPIControllersPlugin {
-            specFile "modules/orders/src/main/resources/apis/openapi.yml"
+            specFile "src/main/resources/apis/openapi-orders.yml"
             zdlFile "models/orders.zdl"
-
-            // these should match the values of openapi-generator-maven-plugin
-            openApiApiPackage "{{basePackage}}.adapters.web"
-            openApiModelPackage "{{basePackage}}.adapters.web.model"
-            openApiModelNameSuffix DTO
         }
 
-        SpringCloudStreams3AdaptersPlugin {
-            apiId "restaurants"
-            role client
-            specFile "modules/restaurants/src/main/resources/apis/asyncapi.yml"
-            modelPackage "{{basePackage}}.client.{{apiId}}.events.dtos"
-            consumerApiPackage "{{basePackage}}.client.{{apiId}}.events.consumer"
+        SpringWebTestClientPlugin {
+            openapiFile "src/main/resources/apis/openapi-orders.yml"
         }
-        SpringCloudStreams3AdaptersPlugin {
-            apiId "delivery"
-            role client
-            specFile "modules/delivery/src/main/resources/apis/asyncapi.yml"
-            modelPackage "{{basePackage}}.client.{{apiId}}.events.dtos"
-            consumerApiPackage "{{basePackage}}.client.{{apiId}}.events.consumer"
-        }
-
     }
 }
 
 apis {
-    asyncapi(provider) default {
-        uri "orders/src/main/resources/apis/asyncapi.yml"
-    }
-    asyncapi(client) RestaurantsAsyncAPI {
-        uri "restaurants/src/main/resources/apis/asyncapi.yml"
-    }
-    asyncapi(client) DeliveryAsyncAPI {
-        uri "delivery/src/main/resources/apis/asyncapi.yml"
-    }
-    openapi(client) CustomersOpenAPI {
-        uri "customers/src/main/resources/apis/openapi.yml"
-    }
-    openapi(client) RestaurantsOpenAPI {
-        uri "restaurants/src/main/resources/apis/openapi.yml"
-    }
+//    asyncapi(provider) default {
+//        uri "orders/src/main/resources/apis/asyncapi.yml"
+//    }
+//    asyncapi(client) RestaurantsAsyncAPI {
+//        uri "restaurants/src/main/resources/apis/asyncapi.yml"
+//    }
+//    asyncapi(client) DeliveryAsyncAPI {
+//        uri "delivery/src/main/resources/apis/asyncapi.yml"
+//    }
+//    openapi(client) CustomersOpenAPI {
+//        uri "customers/src/main/resources/apis/openapi.yml"
+//    }
+//    openapi(client) RestaurantsOpenAPI {
+//        uri "restaurants/src/main/resources/apis/openapi.yml"
+//    }
 }
 
 // == Entities =============================
@@ -176,12 +158,12 @@ service OrdersService for (CustomerOrder) {
     @put("/{orderId}")
     updateOrder(id, CustomerOrderInput) CustomerOrder withEvents OrderEvent OrderStatusUpdated
 
-    @asyncapi({api: RestaurantsAsyncAPI, channel: "KitchenOrdersStatusChannel"})
+//    @asyncapi({api: RestaurantsAsyncAPI, channel: "KitchenOrdersStatusChannel"})
     updateKitchenStatus(id, KitchenStatusInput) CustomerOrder withEvents OrderEvent OrderStatusUpdated
-    @asyncapi({api: DeliveryAsyncAPI, channel: "DeliveryStatusChannel"})
+//    @asyncapi({api: DeliveryAsyncAPI, channel: "DeliveryStatusChannel"})
     updateDeliveryStatus(id, DeliveryStatusInput) CustomerOrder withEvents OrderEvent OrderStatusUpdated
 
-    @asyncapi({channel: "CancelOrdersChannel", topic: "orders.cancel_orders"})
+//    @asyncapi({channel: "CancelOrdersChannel", topic: "orders.cancel_orders"})
     @put("/{orderId}/cancel")
     cancelOrder(id, CancelOrderInput) CustomerOrder withEvents OrderEvent OrderStatusUpdated
 
@@ -190,13 +172,13 @@ service OrdersService for (CustomerOrder) {
 }
 
 @copy(CustomerOrder)
-@asyncapi({channel: "OrdersChannel", topic: "orders.orders"})
+//@asyncapi({channel: "OrdersChannel", topic: "orders.orders"})
 event OrderEvent {
    id String
    // + all fields from CustomerOrder (carried state transfer)
 }
 
-@asyncapi({channel: "OrderUpdatesChannel", topic: "orders.order_updates"})
+//@asyncapi({channel: "OrderUpdatesChannel", topic: "orders.order_updates"})
 event OrderStatusUpdated {
     id String
     dateTime Instant
