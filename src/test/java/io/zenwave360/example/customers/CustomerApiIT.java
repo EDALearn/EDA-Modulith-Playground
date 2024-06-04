@@ -38,7 +38,7 @@ public class CustomerApiIT extends BaseWebTestClientTest {
         requestBody.getAddresses().get(0).setCity("aaa");
         requestBody.getAddresses().get(0).setState("aaa");
         requestBody.getAddresses().get(0).setZip("aaa");
-        requestBody.getAddresses().get(0).setType(new AddressTypeDTO());
+        requestBody.getAddresses().get(0).setType(AddressTypeDTO.HOME);
 
         webTestClient.method(POST).uri("/api/customers")
             .accept(MediaType.APPLICATION_JSON)
@@ -113,7 +113,7 @@ public class CustomerApiIT extends BaseWebTestClientTest {
         requestBody.getAddresses().get(0).setCity("aaa");
         requestBody.getAddresses().get(0).setState("aaa");
         requestBody.getAddresses().get(0).setZip("aaa");
-        requestBody.getAddresses().get(0).setType(new AddressTypeDTO());
+        requestBody.getAddresses().get(0).setType(AddressTypeDTO.WORK);
         var customerId = "";
 
         webTestClient.method(PUT).uri("/api/customers/{customerId}", customerId)

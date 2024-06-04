@@ -111,7 +111,7 @@ service CustomerService for (Customer) {
 
 // == Events =============================
 
-@skip // skip generating this domain enum, it will genereate by asyncapi code generator.
+@event
 enum EventType {  CREATED(1) /** created description */,  UPDATED(1) /** updated description */,  DELETED(1) /** deleted description */ }
 
 event CustomerEvent {

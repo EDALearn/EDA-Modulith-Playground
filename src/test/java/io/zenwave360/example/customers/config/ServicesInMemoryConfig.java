@@ -15,8 +15,6 @@ import org.springframework.context.annotation.Profile;
 @Profile("in-memory")
 public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
 
-    protected final EventsProducerInMemoryContext eventsProducerInMemoryContext = new EventsProducerInMemoryContext();
-
     private ApplicationEventPublisher applicationEventPublisher = new ApplicationEventPublisher() {
         @Override
         public void publishEvent(Object event) {
@@ -25,7 +23,7 @@ public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
     };
 
     protected final CustomerServiceImpl customerService = new CustomerServiceImpl(customerRepository(),
-            eventsProducerInMemoryContext.customerEventsProducer(), applicationEventPublisher);
+            applicationEventPublisher);
 
     @Bean
     public <T extends CustomerService> T customerService() {
@@ -40,10 +38,6 @@ public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
                 : testDataLoader.loadCollectionTestDataAsObjects(Customer.class);
         customerRepository().deleteAll();
         customerRepository().saveAll(customers);
-    }
-
-    public EventsProducerInMemoryContext getEventsProducerInMemoryContext() {
-        return eventsProducerInMemoryContext;
     }
 
     private List<Object> publishedEvents = new ArrayList<>();

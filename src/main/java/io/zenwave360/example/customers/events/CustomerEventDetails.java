@@ -1,4 +1,4 @@
-package io.zenwave360.example.customers;
+package io.zenwave360.example.customers.events;
 
 import io.zenwave360.example.customers.model.*;
 import jakarta.validation.constraints.*;
@@ -10,17 +10,17 @@ import java.util.*;
 /** */
 @lombok.Getter
 @lombok.Setter
-public class CustomerAddressUpdated implements Serializable {
+public class CustomerEventDetails implements Serializable {
 
     @java.io.Serial
     private static final long serialVersionUID = 1L;
 
-    private String customerId;
+    private String firstName;
 
-    private String addressDescription;
+    private String lastName;
 
-    private Address originalAddress;
+    private String email;
 
-    private Address newAddress;
+    private String phone;
 
 }

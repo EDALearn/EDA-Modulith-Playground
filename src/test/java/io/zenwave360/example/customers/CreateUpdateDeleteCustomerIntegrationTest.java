@@ -37,7 +37,7 @@ public class CreateUpdateDeleteCustomerIntegrationTest extends BaseWebTestClient
         customerRequestBody0.getAddresses().get(0).setCity("aaa");
         customerRequestBody0.getAddresses().get(0).setState("aaa");
         customerRequestBody0.getAddresses().get(0).setZip("aaa");
-        customerRequestBody0.getAddresses().get(0).setType(new AddressTypeDTO());
+        customerRequestBody0.getAddresses().get(0).setType(AddressTypeDTO.WORK);
 
         var createCustomerResponse0 = webTestClient.method(POST).uri("/api/customers")
             .accept(MediaType.APPLICATION_JSON)
@@ -63,7 +63,7 @@ public class CreateUpdateDeleteCustomerIntegrationTest extends BaseWebTestClient
         customerRequestBody1.getAddresses().get(0).setCity("aaa");
         customerRequestBody1.getAddresses().get(0).setState("aaa");
         customerRequestBody1.getAddresses().get(0).setZip("aaa");
-        customerRequestBody1.getAddresses().get(0).setType(new AddressTypeDTO());
+        customerRequestBody1.getAddresses().get(0).setType(AddressTypeDTO.WORK);
         var customerId1 = "";
 
         var updateCustomerResponse1 = webTestClient.method(PUT).uri("/api/customers/{customerId}", customerId1)

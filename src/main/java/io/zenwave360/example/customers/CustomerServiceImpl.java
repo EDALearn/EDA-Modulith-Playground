@@ -29,8 +29,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final EventsMapper eventsMapper = EventsMapper.INSTANCE;
 
-    private final ICustomerEventsProducer eventsProducer;
-
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
@@ -40,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer = customerRepository.save(customer);
         // emit events
         var customerEvent = eventsMapper.asCustomerEvent(customer);
-        eventsProducer.onCustomerEvent(customerEvent);
+        applicationEventPublisher.publishEvent(customerEvent);
         return customer;
     }
 
@@ -54,7 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (customer.isPresent()) {
             // emit events
             var customerEvent = eventsMapper.asCustomerEvent(customer.get());
-            eventsProducer.onCustomerEvent(customerEvent);
+            applicationEventPublisher.publishEvent(customerEvent);
         }
         return customer;
     }
@@ -69,9 +67,9 @@ public class CustomerServiceImpl implements CustomerService {
         if (customer.isPresent()) {
             // emit events
             var customerEvent = eventsMapper.asCustomerEvent(customer.get());
-            eventsProducer.onCustomerEvent(customerEvent);
+            applicationEventPublisher.publishEvent(customerEvent);
             var customerAddressUpdated = eventsMapper.asCustomerAddressUpdated(customer.get());
-            eventsProducer.onCustomerAddressUpdated(customerAddressUpdated);
+            applicationEventPublisher.publishEvent(customerAddressUpdated);
         }
         return customer;
     }
@@ -82,7 +80,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.deleteById(id);
         // emit events
         var customerEvent = eventsMapper.asCustomerEvent(id);
-        eventsProducer.onCustomerEvent(customerEvent);
+        applicationEventPublisher.publishEvent(customerEvent);
     }
 
     @Transactional

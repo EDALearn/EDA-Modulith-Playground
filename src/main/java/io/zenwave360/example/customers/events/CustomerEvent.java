@@ -1,4 +1,4 @@
-package io.zenwave360.example.customers;
+package io.zenwave360.example.customers.events;
 
 import io.zenwave360.example.customers.model.*;
 import jakarta.validation.constraints.*;
