@@ -204,6 +204,18 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>openapi-restaurants</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/apis/openapi-restaurants.yml</inputSpec>
+							<apiPackage>io.zenwave360.example.restaurants.adapters.web</apiPackage>
+							<modelPackage>io.zenwave360.example.restaurants.adapters.web.dtos</modelPackage>
+						</configuration>
+					</execution>
+					<execution>
 						<id>openapi-delivery</id>
 						<goals>
 							<goal>generate</goal>

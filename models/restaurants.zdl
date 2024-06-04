@@ -3,57 +3,54 @@
  * ZenWave Online Food Delivery - Restaurants Module.
  */
 config {
-    title "ZenWave Online Food Delivery - Restaurants Module"
+    title "ZenWave Online Food Restaurants - Restaurants Module"
     basePackage "io.zenwave360.example.restaurants"
     persistence mongodb
     haltOnFailFormatting false
 
-    // these are code generation plugins for ZenWave IntelliJ Plugin, for models you can skip to 'entities' section
+    // these should match the values of openapi-generator-maven-plugin
+    openApiApiPackage "{{basePackage}}.adapters.web"
+    openApiModelPackage "{{basePackage}}.adapters.web.dtos"
+    openApiModelNameSuffix DTO
+
     plugins {
 
         ZDLToOpenAPIPlugin {
             idType string
-            targetFile "{{targetFolder}}/src/main/resources/apis/openapi.yml"
-        }
-
-        ZDLToAsyncAPIPlugin {
-            asyncapiVersion v3
-            idType string
-            targetFile "{{targetFolder}}/src/main/resources/apis/asyncapi.yml"
+            targetFile "src/main/resources/apis/openapi-restaurants.yml"
         }
 
         BackendApplicationDefaultPlugin {
             useLombok true
             includeEmitEventsImplementation true
-//             --force // overwite all files
+            --force // overwite all files
         }
 
         OpenAPIControllersPlugin {
-            specFile "modules/restaurants/src/main/resources/apis/openapi.yml"
+            specFile "src/main/resources/apis/openapi-restaurants.yml"
             zdlFile "models/restaurants.zdl"
-
-            // these should match the values of openapi-generator-maven-plugin
-            openApiApiPackage "{{basePackage}}.adapters.web"
-            openApiModelPackage "{{basePackage}}.adapters.web.model"
-            openApiModelNameSuffix DTO
         }
 
-        SpringCloudStreams3AdaptersPlugin {
-            apiId "orders"
-            role client
-            specFile "modules/orders/src/main/resources/apis/asyncapi.yml"
-            modelPackage "{{basePackage}}.client.{{apiId}}.events.dtos"
-            consumerApiPackage "{{basePackage}}.client.{{apiId}}.events.consumer"
+        SpringWebTestClientPlugin {
+            openapiFile "src/main/resources/apis/openapi-restaurants.yml"
         }
     }
 }
 
-apis {
-    asyncapi(client) OrdersAsyncAPI {
-        uri "orders/src/main/resources/apis/asyncapi.yml"
-    }
-}
 
+// == Aggregates =============================
+
+/**
+ * Restaurants Aggregate
+ */
+aggregate KitchenOrderAggregate (KitchenOrder) {
+
+    createKitchenOrder(KitchenOrderInput) withEvents KitchenOrderStatusUpdated
+
+    onOrderStatusUpdated(OrderStatusUpdated) withEvents KitchenOrderStatusUpdated
+
+    updateKitchenOrderStatus(KitchenOrderStatusInput) withEvents KitchenOrderStatusUpdated
+}
 
 // == Entities =============================
 
@@ -77,7 +74,7 @@ entity MenuItem {
     price BigDecimal required min(0)
 }
 
-@aggregate
+//@aggregate
 entity KitchenOrder {
     orderId String required
     restaurantId String required
@@ -130,7 +127,7 @@ service RestaurantBackOfficeService for (Restaurant, MenuItem) {
   listMenuItems(RestaurantIdInput) MenuItem[]
 }
 
-@asyncapi({channel: "RestaurantEventsChannel", topic: "restaurants.events"})
+//@asyncapi({channel: "RestaurantEventsChannel", topic: "restaurants.events"})
 @copy(Restaurant)
 event RestaurantEvent {
     id String required
@@ -164,12 +161,12 @@ input KitchenOrdersFilter {
 }
 
 @rest("/restaurants-orders")
-service RestaurantOrdersService for (KitchenOrder) {
+service RestaurantOrdersService for (KitchenOrderAggregate) {
 
-    @asyncapi({api: OrdersAsyncAPI, channel: "OrdersChannel"})
+//    @asyncapi({api: OrdersAsyncAPI, channel: "OrdersChannel"})
     createKitchenOrder(KitchenOrderInput) KitchenOrder withEvents KitchenOrderStatusUpdated
 
-    @asyncapi({api: OrdersAsyncAPI, channel: "OrderUpdatesChannel"})
+//    @asyncapi({api: OrdersAsyncAPI, channel: "OrderUpdatesChannel"})
     onOrderStatusUpdated(OrderStatusUpdated) withEvents KitchenOrderStatusUpdated
 
     @put("/{orderId}/status")
@@ -179,7 +176,7 @@ service RestaurantOrdersService for (KitchenOrder) {
     searchKitchenOrders(KitchenOrdersFilter) KitchenOrder[]
 }
 
-@asyncapi({channel: "KitchenOrdersStatusChannel", topic: "restaurants.kitchen_order_status"})
+//@asyncapi({channel: "KitchenOrdersStatusChannel", topic: "restaurants.kitchen_order_status"})
 event KitchenOrderStatusUpdated {
     customerOrderId String required
     kitchenOrderId String required
