@@ -158,6 +158,26 @@
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
 				<version>6.6.0</version>
+				<configuration>
+					<generatorName>spring</generatorName>
+					<modelNameSuffix>DTO</modelNameSuffix>
+					<addCompileSourceRoot>true</addCompileSourceRoot>
+					<supportingFilesToGenerate>
+						ApiUtil.java
+					</supportingFilesToGenerate>
+					<typeMappings>
+						<typeMapping>Double=java.math.BigDecimal</typeMapping>
+					</typeMappings>
+					<configOptions>
+						<useSpringBoot3>true</useSpringBoot3>
+						<documentationProvider>none</documentationProvider>
+						<openApiNullable>false</openApiNullable>
+						<useOptional>true</useOptional>
+						<useTags>true</useTags>
+						<interfaceOnly>true</interfaceOnly>
+						<delegatePattern>false</delegatePattern>
+					</configOptions>
+				</configuration>
 				<executions>
 					<execution>
 						<id>openapi-customers</id>
@@ -167,26 +187,8 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/apis/openapi-customers.yml</inputSpec>
-							<generatorName>spring</generatorName>
 							<apiPackage>io.zenwave360.example.customers</apiPackage>
 							<modelPackage>io.zenwave360.example.customers.dtos</modelPackage>
-							<modelNameSuffix>DTO</modelNameSuffix>
-							<addCompileSourceRoot>true</addCompileSourceRoot>
-							<supportingFilesToGenerate>
-								ApiUtil.java
-							</supportingFilesToGenerate>
-							<typeMappings>
-								<typeMapping>Double=java.math.BigDecimal</typeMapping>
-							</typeMappings>
-							<configOptions>
-								<useSpringBoot3>true</useSpringBoot3>
-								<documentationProvider>none</documentationProvider>
-								<openApiNullable>false</openApiNullable>
-								<useOptional>true</useOptional>
-								<useTags>true</useTags>
-								<interfaceOnly>true</interfaceOnly>
-								<delegatePattern>false</delegatePattern>
-							</configOptions>
 						</configuration>
 					</execution>
 					<execution>
@@ -197,26 +199,20 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/apis/openapi-orders.yml</inputSpec>
-							<generatorName>spring</generatorName>
 							<apiPackage>io.zenwave360.example.orders.adapters.web</apiPackage>
 							<modelPackage>io.zenwave360.example.orders.adapters.web.dtos</modelPackage>
-							<modelNameSuffix>DTO</modelNameSuffix>
-							<addCompileSourceRoot>true</addCompileSourceRoot>
-							<supportingFilesToGenerate>
-								ApiUtil.java
-							</supportingFilesToGenerate>
-							<typeMappings>
-								<typeMapping>Double=java.math.BigDecimal</typeMapping>
-							</typeMappings>
-							<configOptions>
-								<useSpringBoot3>true</useSpringBoot3>
-								<documentationProvider>none</documentationProvider>
-								<openApiNullable>false</openApiNullable>
-								<useOptional>true</useOptional>
-								<useTags>true</useTags>
-								<interfaceOnly>true</interfaceOnly>
-								<delegatePattern>false</delegatePattern>
-							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>openapi-delivery</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/apis/openapi-delivery.yml</inputSpec>
+							<apiPackage>io.zenwave360.example.delivery.adapters.web</apiPackage>
+							<modelPackage>io.zenwave360.example.delivery.adapters.web.dtos</modelPackage>
 						</configuration>
 					</execution>
 				</executions>

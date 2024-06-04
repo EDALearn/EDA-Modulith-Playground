@@ -5,61 +5,36 @@ config {
     title "ZenWave Online Food Delivery - Delivery Module"
     basePackage "io.zenwave360.example.delivery"
     persistence mongodb
+    haltOnFailFormatting false
 
-    // these are code generation plugins for ZenWave IntelliJ Plugin, for models you can skip to 'entities' section
+    // these should match the values of openapi-generator-maven-plugin
+    openApiApiPackage "{{basePackage}}.adapters.web"
+    openApiModelPackage "{{basePackage}}.adapters.web.dtos"
+    openApiModelNameSuffix DTO
+
     plugins {
 
         ZDLToOpenAPIPlugin {
             idType string
-            targetFile "{{targetFolder}}/src/main/resources/apis/openapi.yml"
-        }
-
-        ZDLToAsyncAPIPlugin {
-            asyncapiVersion v3
-            idType string
-            targetFile "{{targetFolder}}/src/main/resources/apis/asyncapi.yml"
+            targetFile "src/main/resources/apis/openapi-delivery.yml"
         }
 
         BackendApplicationDefaultPlugin {
             useLombok true
             includeEmitEventsImplementation true
-            // --force // overwite all files
+            --force // overwite all files
         }
 
         OpenAPIControllersPlugin {
-            formatter google // comments in one line are better for demos
-            // TODO fix this: specFile "{{targetFolder}}/src/main/resources/apis/openapi.yml"
-            specFile "modules/delivery/src/main/resources/apis/openapi.yml"
+            specFile "src/main/resources/apis/openapi-delivery.yml"
             zdlFile "models/delivery.zdl"
-
-            // these should match the values of openapi-generator-maven-plugin
-            openApiApiPackage "{{basePackage}}.adapters.web"
-            openApiModelPackage "{{basePackage}}.adapters.web.model"
-            openApiModelNameSuffix DTO
         }
 
-        SpringCloudStreams3AdaptersPlugin {
-            apiId "orders"
-            role client
-            specFile "modules/orders/src/main/resources/apis/asyncapi.yml"
-            modelPackage "{{basePackage}}.client.{{apiId}}.events.dtos"
-            consumerApiPackage "{{basePackage}}.client.{{apiId}}.events.consumer"
+        SpringWebTestClientPlugin {
+            openapiFile "src/main/resources/apis/openapi-delivery.yml"
         }
     }
 }
-
-apis {
-    asyncapi(provider) default {
-        uri "delivery/src/main/resources/apis/asyncapi.yml"
-    }
-    asyncapi(client) RestaurantsAsyncAPI {
-        uri "restaurants/src/main/resources/apis/asyncapi.yml"
-    }
-    asyncapi(client) OrdersAsyncAPI {
-        uri "orders/src/main/resources/apis/asyncapi.yml"
-    }
-}
-
 // == Aggregates =============================
 
 /**
@@ -136,10 +111,10 @@ input DeliveryStatusInput {
 @rest("/delivery")
 service DeliveryService for (DeliveryAggregate) {
 
-    @asyncapi({api: OrdersAsyncAPI, channel: "OrderCreatedChannel"})
+//    @asyncapi({api: OrdersAsyncAPI, channel: "OrderCreatedChannel"})
     createDelivery(DeliveryInput) Delivery withEvents DeliveryStatusUpdated
 
-    @asyncapi({api: OrdersAsyncAPI, channel: "OrderUpdatesChannel"})
+//    @asyncapi({api: OrdersAsyncAPI, channel: "OrderUpdatesChannel"})
     onOrderStatusUpdated(OrderStatusUpdated) Delivery withEvents DeliveryStatusUpdated
 
     @put("/{orderId}/status")
@@ -149,7 +124,7 @@ service DeliveryService for (DeliveryAggregate) {
     listDeliveries() Delivery[]
 }
 
-@asyncapi({channel: "DeliveryStatusChannel", topic: "delivery.delivery_status"})
+//@asyncapi({channel: "DeliveryStatusChannel", topic: "delivery.delivery_status"})
 event DeliveryStatusUpdated {
     customerOrderId String required
     deliveryId String required
