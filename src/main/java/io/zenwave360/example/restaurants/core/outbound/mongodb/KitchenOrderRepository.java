@@ -15,4 +15,6 @@ public interface KitchenOrderRepository extends MongoRepository<KitchenOrder, St
         return findById(id).map(KitchenOrderAggregate::new);
     }
 
+    Optional<KitchenOrder> findByOrderId(String orderId);
+
 }

@@ -44,7 +44,7 @@ public class RestaurantOrdersServiceImpl implements RestaurantOrdersService {
 
     public void onOrderStatusUpdated(OrderStatusUpdated input) {
         log.debug("Request onOrderStatusUpdated: {}", input);
-        var kitchenOrderAggregate = new KitchenOrderAggregate();
+        var kitchenOrderAggregate = new KitchenOrderAggregate(kitchenOrderRepository.findByOrderId(input.getOrderId()).orElseThrow());
         kitchenOrderAggregate.onOrderStatusUpdated(input);
         persistAndEmitEvents(kitchenOrderAggregate);
     }

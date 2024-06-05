@@ -2,8 +2,8 @@ logging:
   level:
     io.zenwave360.example: DEBUG
 
-
 management.endpoints.web.exposure.include: "*"
+management.tracing.sampling.probability: 1.0
 
 spring:
   security:

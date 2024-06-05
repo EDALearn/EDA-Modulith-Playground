@@ -15,4 +15,5 @@ public interface DeliveryRepository extends MongoRepository<Delivery, String> {
         return findById(id).map(DeliveryAggregate::new);
     }
 
+    Optional<Delivery> findByOrderId(String orderId);
 }

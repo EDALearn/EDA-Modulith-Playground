@@ -9,6 +9,8 @@ import io.zenwave360.example.delivery.core.outbound.mongodb.*;
 import java.math.*;
 import java.time.*;
 import java.util.*;
+
+import io.zenwave360.example.restaurants.core.domain.KitchenOrderAggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -44,7 +46,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     public Delivery onOrderStatusUpdated(OrderStatusUpdated input) {
         log.debug("Request onOrderStatusUpdated: {}", input);
-        var deliveryAggregate = new DeliveryAggregate();
+        var deliveryAggregate = new DeliveryAggregate(deliveryRepository.findByOrderId(input.getOrderId()).orElseThrow());
         deliveryAggregate.onOrderStatusUpdated(input);
         persistAndEmitEvents(deliveryAggregate);
         return deliveryAggregate.getRootEntity();

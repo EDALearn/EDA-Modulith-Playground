@@ -24,7 +24,7 @@ public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
     };
 
     protected final OrdersServiceImpl ordersService = new OrdersServiceImpl(customerOrderRepository(),
-            applicationEventPublisher);
+            null, null, applicationEventPublisher);
 
     @Bean
     public <T extends OrdersService> T ordersService() {
