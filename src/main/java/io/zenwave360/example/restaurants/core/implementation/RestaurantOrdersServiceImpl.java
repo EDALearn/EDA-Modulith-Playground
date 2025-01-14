@@ -1,17 +1,19 @@
 package io.zenwave360.example.restaurants.core.implementation;
 
-import io.zenwave360.example.restaurants.core.domain.*;
-import io.zenwave360.example.restaurants.core.domain.events.*;
-import io.zenwave360.example.restaurants.core.implementation.mappers.*;
-import io.zenwave360.example.restaurants.core.inbound.*;
-import io.zenwave360.example.restaurants.core.inbound.dtos.*;
-import io.zenwave360.example.restaurants.core.outbound.mongodb.*;
-import java.math.*;
-import java.time.*;
-import java.util.*;
+import io.zenwave360.example.restaurants.core.domain.KitchenOrder;
+import io.zenwave360.example.restaurants.core.domain.KitchenOrderAggregate;
+import io.zenwave360.example.restaurants.core.domain.events.KitchenOrderStatusUpdated;
+import io.zenwave360.example.restaurants.core.implementation.mappers.EventsMapper;
+import io.zenwave360.example.restaurants.core.implementation.mappers.RestaurantOrdersServiceMapper;
+import io.zenwave360.example.restaurants.core.inbound.RestaurantOrdersService;
+import io.zenwave360.example.restaurants.core.inbound.dtos.KitchenOrderInput;
+import io.zenwave360.example.restaurants.core.inbound.dtos.KitchenOrderStatusInput;
+import io.zenwave360.example.restaurants.core.inbound.dtos.KitchenOrdersFilter;
+import io.zenwave360.example.restaurants.core.inbound.dtos.OrderStatusUpdated;
+import io.zenwave360.example.restaurants.core.outbound.events.EventPublisher;
+import io.zenwave360.example.restaurants.core.outbound.mongodb.KitchenOrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class RestaurantOrdersServiceImpl implements RestaurantOrdersService {
 
     private final EventsMapper eventsMapper = EventsMapper.INSTANCE;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public KitchenOrder createKitchenOrder(KitchenOrderInput input) {
@@ -69,7 +71,7 @@ public class RestaurantOrdersServiceImpl implements RestaurantOrdersService {
         var kitchenOrder = kitchenOrderRepository.save(kitchenOrderAggregate.getRootEntity());
         kitchenOrderAggregate.getEvents().forEach(event -> {
             if (event instanceof KitchenOrderStatusUpdated) {
-                applicationEventPublisher.publishEvent(event);
+                eventPublisher.onKitchenOrderStatusUpdated((KitchenOrderStatusUpdated) event);
             }
         });
         return kitchenOrderAggregate;

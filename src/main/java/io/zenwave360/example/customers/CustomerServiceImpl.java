@@ -9,7 +9,6 @@ import java.time.*;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final EventsMapper eventsMapper = EventsMapper.INSTANCE;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public Customer createCustomer(Customer input) {
@@ -38,7 +37,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer = customerRepository.save(customer);
         // emit events
         var customerEvent = eventsMapper.asCustomerEvent(customer);
-        applicationEventPublisher.publishEvent(customerEvent);
+        eventPublisher.onCustomerEvent(customerEvent);
         return customer;
     }
 
@@ -52,7 +51,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (customer.isPresent()) {
             // emit events
             var customerEvent = eventsMapper.asCustomerEvent(customer.get());
-            applicationEventPublisher.publishEvent(customerEvent);
+            eventPublisher.onCustomerEvent(customerEvent);
         }
         return customer;
     }
@@ -67,9 +66,9 @@ public class CustomerServiceImpl implements CustomerService {
         if (customer.isPresent()) {
             // emit events
             var customerEvent = eventsMapper.asCustomerEvent(customer.get());
-            applicationEventPublisher.publishEvent(customerEvent);
+            eventPublisher.onCustomerEvent(customerEvent);
             var customerAddressUpdated = eventsMapper.asCustomerAddressUpdated(customer.get());
-            applicationEventPublisher.publishEvent(customerAddressUpdated);
+            eventPublisher.onCustomerAddressUpdated(customerAddressUpdated);
         }
         return customer;
     }
@@ -80,7 +79,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.deleteById(id);
         // emit events
         var customerEvent = eventsMapper.asCustomerEvent(id);
-        applicationEventPublisher.publishEvent(customerEvent);
+        eventPublisher.onCustomerEvent(customerEvent);
     }
 
     @Transactional

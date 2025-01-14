@@ -2,12 +2,12 @@ package io.zenwave360.example.orders.core.implementation;
 
 import io.zenwave360.example.customers.CustomerApi;
 import io.zenwave360.example.orders.core.domain.*;
-import io.zenwave360.example.orders.core.domain.events.*;
 import io.zenwave360.example.orders.core.implementation.mappers.*;
 import io.zenwave360.example.orders.core.inbound.*;
 import io.zenwave360.example.orders.core.inbound.dtos.*;
+import io.zenwave360.example.orders.core.outbound.events.EventPublisher;
 import io.zenwave360.example.orders.core.outbound.mongodb.*;
-import java.math.*;
+
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.zenwave360.example.restaurants.adapters.web.RestaurantBackOfficeApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,7 @@ public class OrdersServiceImpl implements OrdersService {
     private final RestaurantBackOfficeApi restaurantBackOfficeApi;
     private final CustomerApi customerApi;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public Optional<CustomerOrder> getCustomerOrder(String id) {
@@ -59,7 +58,7 @@ public class OrdersServiceImpl implements OrdersService {
         customerOrder = customerOrderRepository.save(customerOrder);
         // emit events
         var orderEvent = eventsMapper.asOrderEvent(customerOrder);
-        applicationEventPublisher.publishEvent(orderEvent);
+        eventPublisher.onOrderEvent(orderEvent);
         return customerOrder;
     }
 
@@ -74,10 +73,10 @@ public class OrdersServiceImpl implements OrdersService {
         }).map(customerOrderRepository::save).orElseThrow();
         // emit events
         var orderEvent = eventsMapper.asOrderEvent(customerOrder);
-        applicationEventPublisher.publishEvent(orderEvent);
+        eventPublisher.onOrderEvent(orderEvent);
         if (Objects.equals(previousStatus.get(), customerOrder.getStatus())) {
             var orderStatusUpdated = eventsMapper.asOrderStatusUpdated(customerOrder, previousStatus.get());
-            applicationEventPublisher.publishEvent(orderStatusUpdated);
+            eventPublisher.onOrderStatusUpdated(orderStatusUpdated);
         }
 
         return customerOrder;
@@ -98,7 +97,7 @@ public class OrdersServiceImpl implements OrdersService {
 
         // emit events
         var orderStatusEvent = eventsMapper.asOrderStatusUpdated(customerOrder, previousStatus);
-        applicationEventPublisher.publishEvent(orderStatusEvent);
+        eventPublisher.onOrderStatusUpdated(orderStatusEvent);
 
         return customerOrder;
     }
@@ -118,7 +117,7 @@ public class OrdersServiceImpl implements OrdersService {
 
         // emit events
         var orderStatusEvent = eventsMapper.asOrderStatusUpdated(customerOrder, previousStatus);
-        applicationEventPublisher.publishEvent(orderStatusEvent);
+        eventPublisher.onOrderStatusUpdated(orderStatusEvent);
         return customerOrder;
     }
 
@@ -138,9 +137,9 @@ public class OrdersServiceImpl implements OrdersService {
 
         // emit events
         var orderEvent = eventsMapper.asOrderEvent(customerOrder);
-        applicationEventPublisher.publishEvent(orderEvent);
+        eventPublisher.onOrderEvent(orderEvent);
         var orderStatusUpdated = eventsMapper.asOrderStatusUpdated(customerOrder);
-        applicationEventPublisher.publishEvent(orderStatusUpdated);
+        eventPublisher.onOrderStatusUpdated(orderStatusUpdated);
         return customerOrder;
     }
 

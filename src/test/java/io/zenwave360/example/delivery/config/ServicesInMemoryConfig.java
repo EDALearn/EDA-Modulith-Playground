@@ -4,9 +4,8 @@ import io.zenwave360.example.delivery.core.domain.*;
 import io.zenwave360.example.delivery.core.domain.events.*;
 import io.zenwave360.example.delivery.core.implementation.*;
 import io.zenwave360.example.delivery.core.inbound.*;
-import java.util.ArrayList;
+import io.zenwave360.example.delivery.infrastructure.events.*;
 import java.util.List;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,15 +15,9 @@ import org.springframework.context.annotation.Profile;
 @Profile("in-memory")
 public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
 
-    private ApplicationEventPublisher applicationEventPublisher = new ApplicationEventPublisher() {
-        @Override
-        public void publishEvent(Object event) {
-            publishedEvents.add(event);
-        }
-    };
+    private InMemoryEventPublisher eventPublisher = new InMemoryEventPublisher();
 
-    protected final DeliveryServiceImpl deliveryService = new DeliveryServiceImpl(deliveryRepository(),
-            applicationEventPublisher);
+    protected final DeliveryServiceImpl deliveryService = new DeliveryServiceImpl(deliveryRepository(), eventPublisher);
 
     @Bean
     public <T extends DeliveryService> T deliveryService() {
@@ -40,12 +33,12 @@ public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
                 : testDataLoader.loadCollectionTestDataAsObjects(Delivery.class);
         deliveryRepository().deleteAll();
         deliveryRepository().saveAll(deliveries);
+        eventPublisher.getEvents().clear();
     }
 
-    private List<Object> publishedEvents = new ArrayList<>();
-
-    public List<Object> getPublishedEvents() {
-        return publishedEvents;
+    @Bean
+    public InMemoryEventPublisher eventPublisher() {
+        return eventPublisher;
     }
 
 }

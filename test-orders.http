@@ -50,9 +50,9 @@ Content-Type: application/json
 
 ### Create Order
 < {%
-request.variables.set("customerId", "66604e4b1651813ea9174c8f")
+request.variables.set("customerId", "6787c2b65ab162705f137a05")
 request.variables.set("addressIdentifier", "Home Address")
-request.variables.set("restaurantId", "66604e501651813ea9174c90")
+request.variables.set("restaurantId", "6787c2bc5ab162705f137a06")
 %}
 POST {{baseUrl}}/orders
 Authorization: {{Authorization}}

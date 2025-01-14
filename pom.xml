@@ -14,11 +14,12 @@
 	<name>online-food-delivery-modulith</name>
 	<description>ZenWave-SDK Examples Playground for Modulith</description>
 	<properties>
-		<java.version>22</java.version>
+		<java.version>21</java.version>
 		<spring-modulith.version>1.2.0</spring-modulith.version>
 		<mapstruct.version>1.5.3.Final</mapstruct.version>
 		<archunit-junit5.version>1.2.1</archunit-junit5.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -94,6 +95,12 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<!-- swagger -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.5.0</version>
 		</dependency>
 
 		<dependency>
@@ -194,7 +201,7 @@
 						</goals>
 						<phase>generate-sources</phase>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/apis/openapi-customers.yml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/public/apis/openapi-customers.yml</inputSpec>
 							<apiPackage>io.zenwave360.example.customers</apiPackage>
 							<modelPackage>io.zenwave360.example.customers.dtos</modelPackage>
 						</configuration>
@@ -206,7 +213,7 @@
 						</goals>
 						<phase>generate-sources</phase>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/apis/openapi-orders.yml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/public/apis/openapi-orders.yml</inputSpec>
 							<apiPackage>io.zenwave360.example.orders.adapters.web</apiPackage>
 							<modelPackage>io.zenwave360.example.orders.adapters.web.dtos</modelPackage>
 						</configuration>
@@ -218,7 +225,7 @@
 						</goals>
 						<phase>generate-sources</phase>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/apis/openapi-restaurants.yml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/public/apis/openapi-restaurants.yml</inputSpec>
 							<apiPackage>io.zenwave360.example.restaurants.adapters.web</apiPackage>
 							<modelPackage>io.zenwave360.example.restaurants.adapters.web.dtos</modelPackage>
 						</configuration>
@@ -230,7 +237,7 @@
 						</goals>
 						<phase>generate-sources</phase>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/apis/openapi-delivery.yml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/public/apis/openapi-delivery.yml</inputSpec>
 							<apiPackage>io.zenwave360.example.delivery.adapters.web</apiPackage>
 							<modelPackage>io.zenwave360.example.delivery.adapters.web.dtos</modelPackage>
 						</configuration>

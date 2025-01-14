@@ -1,19 +1,18 @@
 package io.zenwave360.example.delivery.core.implementation;
 
-import io.zenwave360.example.delivery.core.domain.*;
-import io.zenwave360.example.delivery.core.domain.events.*;
-import io.zenwave360.example.delivery.core.implementation.mappers.*;
-import io.zenwave360.example.delivery.core.inbound.*;
-import io.zenwave360.example.delivery.core.inbound.dtos.*;
-import io.zenwave360.example.delivery.core.outbound.mongodb.*;
-import java.math.*;
-import java.time.*;
-import java.util.*;
-
-import io.zenwave360.example.restaurants.core.domain.KitchenOrderAggregate;
+import io.zenwave360.example.delivery.core.domain.Delivery;
+import io.zenwave360.example.delivery.core.domain.DeliveryAggregate;
+import io.zenwave360.example.delivery.core.domain.events.DeliveryStatusUpdated;
+import io.zenwave360.example.delivery.core.implementation.mappers.DeliveryServiceMapper;
+import io.zenwave360.example.delivery.core.implementation.mappers.EventsMapper;
+import io.zenwave360.example.delivery.core.inbound.DeliveryService;
+import io.zenwave360.example.delivery.core.inbound.dtos.DeliveryInput;
+import io.zenwave360.example.delivery.core.inbound.dtos.DeliveryStatusInput;
+import io.zenwave360.example.delivery.core.inbound.dtos.OrderStatusUpdated;
+import io.zenwave360.example.delivery.core.outbound.events.EventPublisher;
+import io.zenwave360.example.delivery.core.outbound.mongodb.DeliveryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,13 +32,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private final EventsMapper eventsMapper = EventsMapper.INSTANCE;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public Delivery createDelivery(DeliveryInput input) {
         log.debug("Request createDelivery: {}", input);
         var deliveryAggregate = new DeliveryAggregate();
         deliveryAggregate.createDelivery(input);
+        sleep(500); // prevent a race condition with kitchen status update
         persistAndEmitEvents(deliveryAggregate);
         return deliveryAggregate.getRootEntity();
     }
@@ -72,10 +72,17 @@ public class DeliveryServiceImpl implements DeliveryService {
         var delivery = deliveryRepository.save(deliveryAggregate.getRootEntity());
         deliveryAggregate.getEvents().forEach(event -> {
             if (event instanceof DeliveryStatusUpdated) {
-                applicationEventPublisher.publishEvent(event);
+                eventPublisher.onDeliveryStatusUpdated((DeliveryStatusUpdated) event);
             }
         });
         return deliveryAggregate;
     }
 
+    private static void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

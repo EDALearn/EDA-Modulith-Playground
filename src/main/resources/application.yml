@@ -3,7 +3,16 @@ logging:
     io.zenwave360.example: DEBUG
 
 management.endpoints.web.exposure.include: "*"
-management.tracing.sampling.probability: 1.0
+
+springdoc.swagger-ui.urls:
+  - name: Customer
+    url: /apis/openapi-customers.yml
+  - name: Orders
+    url: /apis/openapi-orders.yml
+  - name: Restaurants
+    url: /apis/openapi-restaurants.yml
+  - name: Delivery
+    url: /apis/openapi-delivery.yml
 
 spring:
   security:
@@ -14,3 +23,4 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI}
+

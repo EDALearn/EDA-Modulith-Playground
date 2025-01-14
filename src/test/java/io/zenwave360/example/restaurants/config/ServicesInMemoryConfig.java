@@ -4,9 +4,8 @@ import io.zenwave360.example.restaurants.core.domain.*;
 import io.zenwave360.example.restaurants.core.domain.events.*;
 import io.zenwave360.example.restaurants.core.implementation.*;
 import io.zenwave360.example.restaurants.core.inbound.*;
-import java.util.ArrayList;
+import io.zenwave360.example.restaurants.infrastructure.events.*;
 import java.util.List;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,18 +15,13 @@ import org.springframework.context.annotation.Profile;
 @Profile("in-memory")
 public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
 
-    private ApplicationEventPublisher applicationEventPublisher = new ApplicationEventPublisher() {
-        @Override
-        public void publishEvent(Object event) {
-            publishedEvents.add(event);
-        }
-    };
+    private InMemoryEventPublisher eventPublisher = new InMemoryEventPublisher();
 
     protected final RestaurantBackOfficeServiceImpl restaurantBackOfficeService = new RestaurantBackOfficeServiceImpl(
-            restaurantRepository(), menuItemRepository(), applicationEventPublisher);
+            restaurantRepository(), menuItemRepository(), eventPublisher);
 
     protected final RestaurantOrdersServiceImpl restaurantOrdersService = new RestaurantOrdersServiceImpl(
-            kitchenOrderRepository(), applicationEventPublisher);
+            kitchenOrderRepository(), eventPublisher);
 
     @Bean
     public <T extends RestaurantBackOfficeService> T restaurantBackOfficeService() {
@@ -58,12 +52,12 @@ public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
                 : testDataLoader.loadCollectionTestDataAsObjects(KitchenOrder.class);
         kitchenOrderRepository().deleteAll();
         kitchenOrderRepository().saveAll(kitchenOrders);
+        eventPublisher.getEvents().clear();
     }
 
-    private List<Object> publishedEvents = new ArrayList<>();
-
-    public List<Object> getPublishedEvents() {
-        return publishedEvents;
+    @Bean
+    public InMemoryEventPublisher eventPublisher() {
+        return eventPublisher;
     }
 
 }

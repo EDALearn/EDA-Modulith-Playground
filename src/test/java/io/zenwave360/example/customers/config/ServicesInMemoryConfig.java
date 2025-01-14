@@ -3,9 +3,7 @@ package io.zenwave360.example.customers.config;
 import io.zenwave360.example.customers.*;
 import io.zenwave360.example.customers.events.*;
 import io.zenwave360.example.customers.model.*;
-import java.util.ArrayList;
 import java.util.List;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -15,15 +13,9 @@ import org.springframework.context.annotation.Profile;
 @Profile("in-memory")
 public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
 
-    private ApplicationEventPublisher applicationEventPublisher = new ApplicationEventPublisher() {
-        @Override
-        public void publishEvent(Object event) {
-            publishedEvents.add(event);
-        }
-    };
+    private InMemoryEventPublisher eventPublisher = new InMemoryEventPublisher();
 
-    protected final CustomerServiceImpl customerService = new CustomerServiceImpl(customerRepository(),
-            applicationEventPublisher);
+    protected final CustomerServiceImpl customerService = new CustomerServiceImpl(customerRepository(), eventPublisher);
 
     @Bean
     public <T extends CustomerService> T customerService() {
@@ -38,12 +30,12 @@ public class ServicesInMemoryConfig extends RepositoriesInMemoryConfig {
                 : testDataLoader.loadCollectionTestDataAsObjects(Customer.class);
         customerRepository().deleteAll();
         customerRepository().saveAll(customers);
+        eventPublisher.getEvents().clear();
     }
 
-    private List<Object> publishedEvents = new ArrayList<>();
-
-    public List<Object> getPublishedEvents() {
-        return publishedEvents;
+    @Bean
+    public InMemoryEventPublisher eventPublisher() {
+        return eventPublisher;
     }
 
 }

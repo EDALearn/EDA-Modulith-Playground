@@ -1,21 +1,22 @@
 package io.zenwave360.example.restaurants.core.implementation;
 
-import io.zenwave360.example.restaurants.core.domain.*;
-import io.zenwave360.example.restaurants.core.domain.events.*;
-import io.zenwave360.example.restaurants.core.implementation.mappers.*;
-import io.zenwave360.example.restaurants.core.inbound.*;
-import io.zenwave360.example.restaurants.core.inbound.dtos.*;
-import io.zenwave360.example.restaurants.core.outbound.mongodb.*;
-import java.math.*;
-import java.time.*;
-import java.util.*;
+import io.zenwave360.example.restaurants.core.domain.MenuItem;
+import io.zenwave360.example.restaurants.core.domain.Restaurant;
+import io.zenwave360.example.restaurants.core.implementation.mappers.EventsMapper;
+import io.zenwave360.example.restaurants.core.implementation.mappers.RestaurantBackOfficeServiceMapper;
+import io.zenwave360.example.restaurants.core.inbound.RestaurantBackOfficeService;
+import io.zenwave360.example.restaurants.core.outbound.events.EventPublisher;
+import io.zenwave360.example.restaurants.core.outbound.mongodb.MenuItemRepository;
+import io.zenwave360.example.restaurants.core.outbound.mongodb.RestaurantRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 /** Service Implementation for managing [Restaurant, MenuItem]. */
 @Service
@@ -33,7 +34,7 @@ public class RestaurantBackOfficeServiceImpl implements RestaurantBackOfficeServ
 
     private final EventsMapper eventsMapper = EventsMapper.INSTANCE;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public Restaurant createRestaurant(Restaurant input) {
@@ -42,7 +43,7 @@ public class RestaurantBackOfficeServiceImpl implements RestaurantBackOfficeServ
         restaurant = restaurantRepository.save(restaurant);
         // emit events
         var restaurantEvent = eventsMapper.asRestaurantEvent(input);
-        applicationEventPublisher.publishEvent(restaurantEvent);
+        eventPublisher.onRestaurantEvent(restaurantEvent);
         return restaurant;
     }
 
