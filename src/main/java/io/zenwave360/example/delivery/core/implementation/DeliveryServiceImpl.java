@@ -39,7 +39,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         log.debug("Request createDelivery: {}", input);
         var deliveryAggregate = new DeliveryAggregate();
         deliveryAggregate.createDelivery(input);
-        sleep(500); // prevent a race condition with kitchen status update
         persistAndEmitEvents(deliveryAggregate);
         return deliveryAggregate.getRootEntity();
     }
