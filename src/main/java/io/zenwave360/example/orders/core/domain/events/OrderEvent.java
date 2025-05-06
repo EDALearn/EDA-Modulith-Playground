@@ -35,4 +35,8 @@ public class OrderEvent implements Serializable {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().getName() + "#" + this.getId() + "(@" + Integer.toHexString(hashCode()) + ")";
+    }
 }

@@ -66,4 +66,8 @@ public class CustomerOrder implements Serializable {
         return getClass().hashCode();
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().getName() + "#" + this.getId() + "(@" + Integer.toHexString(hashCode()) + ")";
+    }
 }

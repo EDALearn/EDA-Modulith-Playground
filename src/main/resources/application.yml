@@ -23,6 +23,22 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI}
-#  modulith.events.externalization.enabled: true
-#  kafka:
-#    bootstrap-servers: localhost:9092
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    properties:
+      schema.registry.url: ${SCHEMA_REGISTRY_URL}
+    producer:
+      auto.register.schemas: true
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  cloud:
+    stream:
+      kafka.binder.enable-observation: true
+      bindings:
+        ## Orders Module Bindings
+        on-order-event-out-0:
+          destination: orders.order_details
+        on-order-status-updated-out-0:
+          destination: orders.order_status_updates

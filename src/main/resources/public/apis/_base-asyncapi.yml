@@ -1,0 +1,19 @@
+asyncapi: 3.0.0
+info:
+  title: "ZenWave Online Food Delivery - Orders Module"
+  description: "ZenWave Online Food Delivery - Orders Module"
+  version: 0.0.1
+  contact:
+    email: email@domain.com
+    name: "ZenWave"
+
+servers:
+  localKafka:
+    host: localhost:9092
+    protocol: kafka
+    description: Local Kafka broker
+    bindings:
+      kafka:
+        schemaRegistryUrl: 'http://localhost:8081'
+        schemaRegistryVendor: 'confluent'
+        bindingVersion: '0.5.0'

@@ -8,6 +8,7 @@ import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -15,9 +16,9 @@ import java.util.Optional;
 @Configuration
 @Import(MongoAutoConfiguration.class)
 @EnableMongoAuditing(dateTimeProviderRef = "auditingDateTimeProvider")
+@EnableTransactionManagement
 public class MongoConfig {
 
-    // @Profile("!local")
     @Bean
     MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
         return new MongoTransactionManager(dbFactory);
