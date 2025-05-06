@@ -19,7 +19,7 @@
         <spring-cloud.version>2024.0.0</spring-cloud.version>
         <spring-cloud-stream-schema.version>2.2.1.RELEASE</spring-cloud-stream-schema.version>
 		<mapstruct.version>1.5.3.Final</mapstruct.version>
-        <zenwave.version>2.0.1</zenwave.version>
+        <zenwave.version>2.1.0-SNAPSHOT</zenwave.version>
 		<archunit-junit5.version>1.2.1</archunit-junit5.version>
 	</properties>
 
@@ -185,11 +185,12 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>6.6.0</version>
+				<version>7.11.0</version>
 				<configuration>
 					<generatorName>spring</generatorName>
 					<modelNameSuffix>DTO</modelNameSuffix>
 					<addCompileSourceRoot>true</addCompileSourceRoot>
+                    <skipIfSpecIsUnchanged>true</skipIfSpecIsUnchanged>
 					<supportingFilesToGenerate>
 						ApiUtil.java
 					</supportingFilesToGenerate>
@@ -197,13 +198,15 @@
 						<typeMapping>Double=java.math.BigDecimal</typeMapping>
 					</typeMappings>
 					<configOptions>
-						<useSpringBoot3>true</useSpringBoot3>
-						<documentationProvider>none</documentationProvider>
-						<openApiNullable>false</openApiNullable>
-						<useOptional>true</useOptional>
-						<useTags>true</useTags>
-						<interfaceOnly>true</interfaceOnly>
-						<delegatePattern>false</delegatePattern>
+                        <useSpringBoot3>true</useSpringBoot3>
+                        <documentationProvider>none</documentationProvider>
+                        <openApiNullable>false</openApiNullable>
+                        <useOptional>false</useOptional>
+                        <useTags>true</useTags>
+                        <interfaceOnly>true</interfaceOnly>
+                        <skipDefaultInterface>true</skipDefaultInterface>
+                        <delegatePattern>false</delegatePattern>
+                        <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
 					</configOptions>
 				</configuration>
 				<executions>

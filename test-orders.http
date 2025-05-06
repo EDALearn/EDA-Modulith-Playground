@@ -50,9 +50,9 @@ Content-Type: application/json
 
 ### Create Order
 < {%
-request.variables.set("customerId", "678e30cda046c422f57b1088")
+request.variables.set("customerId", "681a222a5dc08e16f782aeb3")
 request.variables.set("addressIdentifier", "Home Address")
-request.variables.set("restaurantId", "678e30d3a046c422f57b1089")
+request.variables.set("restaurantId", "681a22305dc08e16f782aeb4")
 %}
 POST {{baseUrl}}/orders
 Authorization: {{Authorization}}
@@ -74,7 +74,7 @@ Content-Type: application/json
 
 ### Get Order
 < {%
-    request.variables.set("orderId", "65e5ec9f19986b372f9a710c")
+    request.variables.set("orderId", "681a249a228c81008fb28341")
 %}
 GET {{baseUrl}}/orders/{{orderId}}
 Authorization: {{Authorization}}

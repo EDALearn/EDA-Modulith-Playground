@@ -1,16 +1,13 @@
 package io.zenwave360.example.orders.infrastructure.events;
 
-import io.zenwave360.example.orders.core.domain.events.OrderEvent;
-import io.zenwave360.example.orders.core.domain.events.OrderStatusUpdated;
-import io.zenwave360.example.orders.core.outbound.events.OrdersEventsProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.modulith.events.ApplicationModuleListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionalEventListener;
+
+import java.time.Instant;
+import java.time.OffsetDateTime;
 
 @Component
 @lombok.AllArgsConstructor
@@ -34,6 +31,10 @@ public class EventExternalizer {
 //
 //    @Mapper
 //    interface EventsMapper {
+//        default OffsetDateTime asOffsetDateTime(Instant value) {
+//            return value == null ? null : OffsetDateTime.ofInstant(value, OffsetDateTime.now().getOffset());
+//        }
+//
 //        io.zenwave360.example.orders.core.domain.events2.OrderEvent asOrderEvent(OrderEvent event);
 //
 //        io.zenwave360.example.orders.core.domain.events2.OrderStatusUpdated asOrderStatusUpdated(OrderStatusUpdated event);

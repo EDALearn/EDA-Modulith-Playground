@@ -34,9 +34,9 @@ public class CustomerApiControllerTest {
 
     @Test
     public void listCustomersTest() {
-        Optional<Integer> page = null;
-        Optional<Integer> limit = null;
-        Optional<List<String>> sort = null;
+        Integer page = null;
+        Integer limit = null;
+        List<String> sort = null;
         var response = controller.listCustomers(page, limit, sort);
         Assertions.assertEquals(200, response.getStatusCode().value());
     }

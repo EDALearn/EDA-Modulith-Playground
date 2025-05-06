@@ -35,9 +35,9 @@ public class RestaurantOrdersApiControllerTest {
 
     @Test
     public void searchKitchenOrdersTest() {
-        Optional<Integer> page = null;
-        Optional<Integer> limit = null;
-        Optional<List<String>> sort = null;
+        Integer page = null;
+        Integer limit = null;
+        List<String> sort = null;
         KitchenOrdersFilterDTO reqBody = null;
         var response = controller.searchKitchenOrders(page, limit, sort, reqBody);
         Assertions.assertEquals(201, response.getStatusCode().value());

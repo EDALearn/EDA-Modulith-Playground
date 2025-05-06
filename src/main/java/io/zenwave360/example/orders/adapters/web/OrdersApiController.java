@@ -42,7 +42,6 @@ public class OrdersApiController implements OrdersApi {
         this.ordersService = ordersService;
     }
 
-    @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
     }

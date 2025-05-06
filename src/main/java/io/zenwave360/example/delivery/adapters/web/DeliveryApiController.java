@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -42,7 +43,6 @@ public class DeliveryApiController implements DeliveryApi {
         this.deliveryService = deliveryService;
     }
 
-    @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
     }
@@ -56,15 +56,21 @@ public class DeliveryApiController implements DeliveryApi {
     }
 
     @Override
-    public ResponseEntity<DeliveryPaginatedDTO> listDeliveries(Optional<Integer> page, Optional<Integer> limit,
-            Optional<List<String>> sort) {
+    public ResponseEntity<DeliveryPaginatedDTO> listDeliveries(Integer page, Integer limit,
+            List<String> sort) {
         var deliveryPage = deliveryService.listDeliveries(pageOf(page, limit, sort));
         var responseDTO = mapper.asDeliveryPaginatedDTO(deliveryPage);
         return ResponseEntity.status(200).body(responseDTO);
     }
 
-    protected Pageable pageOf(Optional<Integer> page, Optional<Integer> limit, Optional<List<String>> sort) {
-        return PageRequest.of(page.orElse(0), limit.orElse(10));
+    protected Pageable pageOf(Integer page, Integer limit, List<String> sort) {
+        Sort sortOrder = sort != null ? Sort.by(sort.stream().map(sortParam -> {
+            String[] parts = sortParam.split(":");
+            String property = parts[0];
+            Sort.Direction direction = parts.length > 1 ? Sort.Direction.fromString(parts[1]) : Sort.Direction.ASC;
+            return new Sort.Order(direction, property);
+        }).toList()) : Sort.unsorted();
+        return PageRequest.of(page != null ? page : 0, limit != null ? limit : 10, sortOrder);
     }
 
 }
