@@ -1,5 +1,8 @@
 package io.zenwave360.example.orders.infrastructure.events;
 
+
+import io.zenwave360.example.orders.core.domain.events.OrderEvent;
+import io.zenwave360.example.orders.core.domain.events.OrderStatusUpdated;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
