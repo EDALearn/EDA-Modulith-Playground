@@ -1,7 +1,8 @@
 # Food Delivery Service with SpringBoot Microservices + AsyncAPI v3
 
-SpringBoot Microservices for a "Food Delivery Service" for a AsyncAPI Technical Talk
+SpringBoot Microservices for a "Food Delivery Service" for a Spring Modulith + AsyncAPI Technical Talk
 
+[Slides](./slides.pdf)
 
 ## Online Food Delivery Service
 
