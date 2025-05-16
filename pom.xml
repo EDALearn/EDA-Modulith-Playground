@@ -296,10 +296,14 @@
                         <artifactId>zenwave-sdk-maven-plugin</artifactId>
                         <version>${zenwave.version}</version>
                         <configuration>
+<!--                            <inputSpec>${project.basedir}/src/main/resources/public/apis/asyncapi-orders.yml</inputSpec>-->
+                            <inputSpec>classpath:/public/apis/asyncapi-orders.yml</inputSpec>
+                            <includeProjectClasspath>true</includeProjectClasspath>
                             <addCompileSourceRoot>true</addCompileSourceRoot><!-- default is true -->
                             <addTestCompileSourceRoot>true</addTestCompileSourceRoot><!-- default is true -->
                         </configuration>
                         <executions>
+                            <!-- Generate Models/DTOs -->
                             <execution>
                                 <id>generate-asyncapi-orders-dtos</id>
                                 <phase>generate-sources</phase>
@@ -308,12 +312,12 @@
                                 </goals>
                                 <configuration>
                                     <generatorName>jsonschema2pojo</generatorName>
-                                    <inputSpec>${project.basedir}/src/main/resources/public/apis/asyncapi-orders.yml</inputSpec>
                                     <configOptions>
                                         <modelPackage>io.zenwave360.example.orders.core.domain.events2</modelPackage>
                                     </configOptions>
                                 </configuration>
                             </execution>
+                            <!-- Generate AsyncAPI Provider (Producer of Events) -->
                             <execution>
                                 <id>generate-asyncapi-orders-producer</id>
                                 <phase>generate-sources</phase>
@@ -322,7 +326,6 @@
                                 </goals>
                                 <configuration>
                                     <generatorName>spring-cloud-streams3</generatorName>
-                                    <inputSpec>${project.basedir}/src/main/resources/public/apis/asyncapi-orders.yml</inputSpec>
                                     <configOptions>
                                         <role>provider</role>
                                         <style>imperative</style>

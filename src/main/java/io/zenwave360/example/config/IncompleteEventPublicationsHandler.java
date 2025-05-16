@@ -22,6 +22,7 @@ public class IncompleteEventPublicationsHandler {
     private final Map<UUID, AtomicInteger> failedEvents = new HashMap<>();
 
     @Scheduled(fixedDelay = 1000)
+    // Use @SchedulerLock to prevent multiple instances from executing this method at the same time
     public void retryFailedEvents() {
         incompleteEventPublications.resubmitIncompletePublications((ep) -> {
             // Wait 2 seconds before retrying
@@ -40,5 +41,4 @@ public class IncompleteEventPublicationsHandler {
             return true;
         });
     }
-
 }
