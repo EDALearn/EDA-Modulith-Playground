@@ -25,8 +25,8 @@ public class IncompleteEventPublicationsHandler {
     // Use @SchedulerLock to prevent multiple instances from executing this method at the same time
     public void retryFailedEvents() {
         incompleteEventPublications.resubmitIncompletePublications((ep) -> {
-            // Wait 2 seconds before retrying
-            if (ep.getPublicationDate().plusSeconds(2).isAfter(java.time.Instant.now())) {
+            // Wait 5 seconds before retrying
+            if (ep.getPublicationDate().plusSeconds(5).isAfter(java.time.Instant.now())) {
                 return false;
             }
             int count = failedEvents.computeIfAbsent(ep.getIdentifier(), k -> new AtomicInteger(0)).incrementAndGet();
